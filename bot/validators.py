@@ -2,7 +2,7 @@ import re
 
 from bot.client import ValidationError
 
-SYMBOL_PATTERN = re.compile(r"^[A-Z]{2,10}USDT$")
+SYMBOL_PATTERN = re.compile(r"^[A-Z0-9]{2,12}USDT$")
 
 
 def validate_symbol(symbol: str) -> str:

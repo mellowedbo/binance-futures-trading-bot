@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futures Terminal</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;border-bottom:1px solid #30363d}
+.header-title{font-size:16px;font-weight:600;letter-spacing:.3px}
+.status-dot{width:10px;height:10px;border-radius:50%;background:#7d8590;display:inline-block;vertical-align:middle;margin-left:8px}
+.status-dot.ok{background:#3fb950}
+.status-dot.err{background:#f85149}
+.order-panel{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px 24px;margin:24px auto;max-width:520px}
+.order-panel label{display:block;font-size:13px;color:#7d8590;margin-bottom:4px;margin-top:14px}
+.order-panel label:first-child{margin-top:0}
+.order-panel select,.order-panel input[type="number"]{width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;border-radius:6px;padding:8px 10px;font-size:14px;font-family:'SFMono-Regular',Consolas,monospace;outline:none}
+.order-panel select:focus,.order-panel input:focus{border-color:#58a6ff}
+.side-toggle{display:flex;gap:8px;margin-top:6px}
+.side-btn{flex:1;padding:10px;border:1px solid #30363d;border-radius:6px;background:#0d1117;color:#7d8590;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.side-btn:hover{border-color:#58a6ff}
+.side-btn.active-buy{background:#0d2818;border-color:#3fb950;color:#3fb950}
+.side-btn.active-sell{background:#2d1215;border-color:#f85149;color:#f85149}
+.submit-btn{width:100%;margin-top:20px;padding:12px;border:none;border-radius:6px;background:#238636;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.hidden{display:none!important}
+.result-panel{max-width:520px;margin:0 auto 16px;padding:14px 20px;border-radius:8px;font-size:14px}
+.result-panel.success{border:1px solid #3fb950;background:#0d2818}
+.result-panel.error{border:1px solid #f85149;background:#2d1215;color:#f85149}
+.result-panel .row{display:flex;justify-content:space-between;padding:3px 0}
+.result-panel .row .val{font-family:'SFMono-Regular',Consolas,monospace;color:#e6edf3}
+.result-panel.error .row .val{color:#f85149}
+.recent-orders{max-width:720px;margin:24px auto;padding:0 24px}
+.recent-orders h3{font-size:14px;color:#7d8590;margin-bottom:10px;font-weight:500}
+.recent-orders table{width:100%;border-collapse:collapse;font-size:13px}
+.recent-orders th{text-align:left;color:#7d8590;font-weight:500;padding:6px 8px;border-bottom:1px solid #30363d}
+.recent-orders td{padding:6px 8px;border-bottom:1px solid #161b22;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px}
+.side-buy{color:#3fb950}
+.side-sell{color:#f85149}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-title">Futures Terminal</span>
+  <span><span class="status-dot" id="status-dot"></span></span>
+</div>
+
+<form id="order-form" class="order-panel" autocomplete="off">
+  <label for="symbol">Symbol</label>
+  <select id="symbol" name="symbol">
+    {% for s in symbols %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+  </select>
+
+  <label>Side</label>
+  <div class="side-toggle">
+    <button type="button" class="side-btn active-buy" data-side="BUY" id="btn-buy">BUY</button>
+    <button type="button" class="side-btn" data-side="SELL" id="btn-sell">SELL</button>
+  </div>
+
+  <label for="order-type">Order Type</label>
+  <select id="order-type" name="type">
+    {% for t in order_types %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+  </select>
+
+  <label for="quantity">Quantity</label>
+  <input type="number" id="quantity" name="quantity" step="any" min="0">
+
+  <div id="price-group" class="hidden">
+    <label for="price">Price</label>
+    <input type="number" id="price" name="price" step="any" min="0">
+  </div>
+
+  <div id="stop-price-group" class="hidden">
+    <label for="stop-price">Stop Price</label>
+    <input type="number" id="stop-price" name="stop-price" step="any" min="0">
+  </div>
+
+  <button type="submit" class="submit-btn" id="submit-btn">Place Order</button>
+</form>
+
+<div id="result-area"></div>
+
+<div class="recent-orders" id="recent-area" class="hidden">
+  <h3>Recent Orders</h3>
+  <table>
+    <thead><tr><th>Time</th><th>Symbol</th><th>Side</th><th>Type</th><th>Qty</th><th>Order ID</th><th>Status</th></tr></thead>
+    <tbody id="recent-body"></tbody>
+  </table>
+</div>
+
+<script>
+const form = document.getElementById("order-form");
+const typeSelect = document.getElementById("order-type");
+const priceGroup = document.getElementById("price-group");
+const stopGroup = document.getElementById("stop-price-group");
+const btnBuy = document.getElementById("btn-buy");
+const btnSell = document.getElementById("btn-sell");
+const submitBtn = document.getElementById("submit-btn");
+const resultArea = document.getElementById("result-area");
+const statusDot = document.getElementById("status-dot");
+const recentBody = document.getElementById("recent-body");
+const recentArea = document.getElementById("recent-area");
+
+let selectedSide = "BUY";
+
+function updateFieldVisibility() {
+  const t = typeSelect.value;
+  priceGroup.classList.toggle("hidden", t !== "LIMIT");
+  stopGroup.classList.toggle("hidden", t !== "STOP_MARKET");
+}
+
+typeSelect.addEventListener("input", updateFieldVisibility);
+updateFieldVisibility();
+
+btnBuy.addEventListener("click", () => {
+  selectedSide = "BUY";
+  btnBuy.className = "side-btn active-buy";
+  btnSell.className = "side-btn";
+});
+
+btnSell.addEventListener("click", () => {
+  selectedSide = "SELL";
+  btnSell.className = "side-btn active-sell";
+  btnBuy.className = "side-btn";
+});
+
+recentArea.classList.add("hidden");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Placing...";
+
+  const payload = {
+    symbol: document.getElementById("symbol").value.trim(),
+    side: selectedSide,
+    type: typeSelect.value.trim(),
+    quantity: document.getElementById("quantity").value.trim(),
+  };
+
+  if (typeSelect.value === "LIMIT") {
+    payload.price = document.getElementById("price").value.trim();
+  }
+  if (typeSelect.value === "STOP_MARKET") {
+    payload.stop_price = document.getElementById("stop-price").value.trim();
+  }
+
+  try {
+    const resp = await fetch("/api/order", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload),
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok) {
+      statusDot.className = "status-dot ok";
+      const avgPrice = data.avgPrice && data.avgPrice !== "0" ? data.avgPrice : "\u2014";
+      resultArea.innerHTML =
+        `<div class="result-panel success">` +
+        `<div class="row"><span>Order ID</span><span class="val">${data.orderId ?? "\u2014"}</span></div>` +
+        `<div class="row"><span>Status</span><span class="val">${data.status ?? "\u2014"}</span></div>` +
+        `<div class="row"><span>Executed Qty</span><span class="val">${data.executedQty ?? "\u2014"}</span></div>` +
+        `<div class="row"><span>Avg Price</span><span class="val">${avgPrice}</span></div>` +
+        `</div>`;
+      addRecentRow(data);
+    } else {
+      statusDot.className = "status-dot err";
+      resultArea.innerHTML =
+        `<div class="result-panel error"><div class="row"><span class="val">${data.error ?? "Unknown error"}</span></div></div>`;
+    }
+  } catch (err) {
+    statusDot.className = "status-dot err";
+    resultArea.innerHTML =
+      `<div class="result-panel error"><div class="row"><span class="val">Network error — could not reach server.</span></div></div>`;
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Place Order";
+});
+
+function addRecentRow(order) {
+  recentArea.classList.remove("hidden");
+  const tr = document.createElement("tr");
+  const now = new Date().toLocaleTimeString();
+  const sideClass = order.side === "BUY" ? "side-buy" : "side-sell";
+  tr.innerHTML =
+    `<td>${now}</td>` +
+    `<td>${order.symbol ?? ""}</td>` +
+    `<td class="${sideClass}">${order.side ?? ""}</td>` +
+    `<td>${order.type ?? ""}</td>` +
+    `<td>${order.executedQty ?? ""}</td>` +
+    `<td>${order.orderId ?? ""}</td>` +
+    `<td>${order.status ?? ""}</td>`;
+  recentBody.prepend(tr);
+  while (recentBody.children.length > 20) {
+    recentBody.removeChild(recentBody.lastChild);
+  }
+}
+</script>
+</body>
+</html>

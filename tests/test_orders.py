@@ -69,3 +69,49 @@ class TestPlaceStopMarketOrder:
         assert params["stopPrice"] == 58000.0
         assert "price" not in params
         assert result["orderId"] == 4242
+
+
+class TestReturnValues:
+    def test_market_order_returns_full_response_dict(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        expected = mock_post.return_value
+        result = mgr.place_market_order("BTCUSDT", "BUY", 0.01)
+        assert result is expected
+
+    def test_limit_order_returns_full_response_dict(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        expected = mock_post.return_value
+        result = mgr.place_limit_order("ETHUSDT", "SELL", 0.1, 3200.0)
+        assert result is expected
+
+    def test_stop_market_returns_full_response_dict(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        expected = mock_post.return_value
+        result = mgr.place_stop_market_order("BTCUSDT", "SELL", 0.01, 58000.0)
+        assert result is expected
+
+
+class TestOrderEndpoint:
+    def test_market_order_hits_correct_endpoint(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_market_order("BTCUSDT", "BUY", 0.01)
+        endpoint = mock_post.call_args[0][0]
+        assert endpoint == "/fapi/v1/order"
+
+    def test_limit_order_hits_correct_endpoint(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_limit_order("ETHUSDT", "SELL", 0.1, 3200.0)
+        endpoint = mock_post.call_args[0][0]
+        assert endpoint == "/fapi/v1/order"
+
+    def test_stop_market_hits_correct_endpoint(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_stop_market_order("BTCUSDT", "SELL", 0.01, 58000.0)
+        endpoint = mock_post.call_args[0][0]
+        assert endpoint == "/fapi/v1/order"

@@ -79,21 +79,48 @@ On failure — for example, omitting the `--price` flag on a LIMIT order — the
 ╰───────────────────────────────────────────╯
 ```
 
+## Web UI
+
+A lightweight browser interface is available as an alternative to the CLI.
+
+Start the server:
+
+```bash
+python run_ui.py
+```
+
+Open http://127.0.0.1:5000 in a browser. The same `.env` credentials used by the CLI are read automatically.
+
+The UI lets you select a symbol, toggle BUY/SELL, choose an order type, fill in the relevant fields, and submit. Price and stop-price inputs appear and disappear based on the selected order type. Successful orders appear immediately in a recent orders table below the form.
+
+The web server does not need to be restarted when `.env` changes — credentials are read at each request.
+
 ## Project layout
 
 | Path | Role |
 |---|---|
-| `cli.py` | Typer CLI entry point; loads env, calls validators, renders Rich output |
-| `bot/client.py` | Thin REST wrapper over Binance Futures Testnet; HMAC signing, error mapping |
-| `bot/orders.py` | OrderManager — maps business intent to API parameters |
-| `bot/validators.py` | Pure input validation functions; no I/O or API dependency |
-| `bot/logging_config.py` | Rotating file handler + Rich console handler setup |
-| `tests/` | Pytest suite covering validators, client signing, and order construction |
+| `cli.py` | Typer CLI entry point |
+| `run_ui.py` | Web UI startup script |
+| `ui/app.py` | Flask application factory and API routes |
+| `ui/templates/index.html` | Single-page browser interface |
+| `bot/client.py` | Binance REST wrapper with HMAC signing |
+| `bot/orders.py` | OrderManager — maps intent to API params |
+| `bot/validators.py` | Pure input validation, no I/O |
+| `bot/logging_config.py` | Rotating file + Rich console handler |
+| `tests/` | 62-test pytest suite, no live API calls |
 
 ## Running tests
 
 ```bash
 pytest tests/ -v
+```
+
+The suite covers validators (28 tests), the Binance REST client (13 tests), order placement logic (9 tests), and the web UI layer (12 tests) — 62 tests total. All Binance HTTP calls are mocked; no live credentials are needed to run the tests.
+
+To run a single file:
+
+```bash
+pytest tests/test_ui.py -v
 ```
 
 ## Logging
@@ -105,7 +132,7 @@ The API secret is never written to any log line. We redact the `signature` param
 ## Assumptions and known limitations
 
 - Quantity precision is not validated against Binance's LOT_SIZE filter. The exchange will reject the order if the step size is wrong, and the error will surface through the normal API error path.
-- Symbol validation uses a regex pattern (`^[A-Z]{2,10}USDT$`) rather than fetching the live exchange info endpoint. This means newly listed pairs may be rejected by the validator even though the exchange would accept them.
+- Symbol validation uses a regex pattern (`^[A-Z0-9]{2,12}USDT$`) rather than fetching the live exchange info endpoint. This means newly listed pairs outside this pattern may be rejected by the validator even though the exchange would accept them.
 - There is no retry logic on transient network failures. A single timeout or connection reset raises `NetworkError` immediately. Retrying with backoff is a deliberate non-goal for this scope.
 - The bot only places orders — it does not query balances, open positions, or cancel existing orders. Those are out of scope.
 - `recvWindow` is hardcoded at 5000 ms. If the testnet experiences high latency, signed requests may expire before reaching the server.

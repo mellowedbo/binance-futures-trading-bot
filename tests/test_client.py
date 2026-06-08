@@ -2,7 +2,6 @@ import hashlib
 import hmac
 import logging
 import time
-from unittest.mock import patch
 
 import pytest
 import requests
@@ -105,3 +104,60 @@ class TestSecretNotLogged:
             client.post("/fapi/v1/order", {"symbol": "BTCUSDT"})
         for record in caplog.records:
             assert TEST_SECRET not in record.message
+
+
+class TestGetErrors:
+    @responses.activate
+    def test_get_raises_binance_api_error(self):
+        responses.add(
+            responses.GET,
+            "https://testnet.binancefuture.com/fapi/v1/account",
+            json={"code": -1121, "msg": "Invalid symbol."},
+            status=200,
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        with pytest.raises(BinanceAPIError):
+            client.get("/fapi/v1/account")
+
+    @responses.activate
+    def test_get_raises_network_error(self):
+        responses.add(
+            responses.GET,
+            "https://testnet.binancefuture.com/fapi/v1/account",
+            body=requests.exceptions.ConnectionError("refused"),
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        with pytest.raises(NetworkError):
+            client.get("/fapi/v1/account")
+
+    @responses.activate
+    def test_get_api_error_code_and_msg(self):
+        responses.add(
+            responses.GET,
+            "https://testnet.binancefuture.com/fapi/v1/account",
+            json={"code": -1121, "msg": "Invalid symbol."},
+            status=200,
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        with pytest.raises(BinanceAPIError) as exc_info:
+            client.get("/fapi/v1/account")
+        assert exc_info.value.code == -1121
+        assert "Invalid symbol" in exc_info.value.msg
+
+
+class TestHeaders:
+    def test_headers_contain_api_key(self):
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        headers = client._headers()
+        assert headers["X-MBX-APIKEY"] == TEST_KEY
+
+    def test_headers_do_not_contain_secret(self):
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        headers = client._headers()
+        assert "secret" not in str(headers).lower()
+
+
+class TestBinanceAPIError:
+    def test_str_representation(self):
+        err = BinanceAPIError(-1121, "bad")
+        assert str(err) == "[-1121] bad"
