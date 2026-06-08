@@ -1,5 +1,7 @@
 .env
-logs/
+logs/*.1
+logs/*.2
+logs/*.3
 __pycache__/
 *.pyc
 .pytest_cache/
