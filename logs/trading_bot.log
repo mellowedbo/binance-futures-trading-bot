@@ -12,3 +12,23 @@
 2026-06-08 09:19:12,151 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'STOP_MARKET', 'quantity': 0.001, 'stopPrice': 50000.0, 'timestamp': 1780910352151, 'recvWindow': 5000}
 2026-06-08 09:19:12,242 | DEBUG    | bot.client | response status=400 body={"code":-4120,"msg":"Order type not supported for this endpoint. Please use the Algo Order API endpoints instead."}
 2026-06-08 09:19:12,243 | ERROR    | bot.cli | order rejected: [-4120] Order type not supported for this endpoint. Please use the Algo Order API endpoints instead.
+2026-06-08 09:49:34,755 | INFO     | bot.orders | sending MARKET SELL BTCUSDT qty=0.001000
+2026-06-08 09:49:34,757 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1780912174756, 'recvWindow': 5000}
+2026-06-08 09:49:34,852 | DEBUG    | bot.client | response status=200 body={"orderId":14490580231,"symbol":"BTCUSDT","status":"NEW","clientOrderId":"4Y8cSl9w3cBfOyWGWRp3Ig","price":"0.00","origQty":"0.0010","executedQty":"0.0000","cumQty":"0.0000","timeInForce":"GTC","type":"MARKET","reduceOnly":false,"closePosition":false,"side":"SELL","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"MARKET","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"updateTime":1780912174818}
+2026-06-08 09:49:34,853 | INFO     | bot.orders | order 14490580231 status=NEW executedQty=0.0000 avgPrice=n/a
+2026-06-08 09:49:38,995 | INFO     | bot.orders | sending LIMIT BUY ETHUSDT qty=0.010000 price=1500.00 tif=GTC
+2026-06-08 09:49:38,997 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'ETHUSDT', 'side': 'BUY', 'type': 'LIMIT', 'quantity': 0.01, 'price': 1500.0, 'timeInForce': 'GTC', 'timestamp': 1780912178997, 'recvWindow': 5000}
+2026-06-08 09:49:39,088 | DEBUG    | bot.client | response status=400 body={"code":-4164,"msg":"Order's notional must be no smaller than 20 (unless you choose reduce only)."}
+2026-06-08 09:49:39,088 | ERROR    | bot.cli | order rejected: [-4164] Order's notional must be no smaller than 20 (unless you choose reduce only).
+2026-06-08 09:49:45,204 | INFO     | bot.orders | sending LIMIT BUY ETHUSDT qty=0.100000 price=2500.00 tif=GTC
+2026-06-08 09:49:45,206 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'ETHUSDT', 'side': 'BUY', 'type': 'LIMIT', 'quantity': 0.1, 'price': 2500.0, 'timeInForce': 'GTC', 'timestamp': 1780912185206, 'recvWindow': 5000}
+2026-06-08 09:49:45,292 | DEBUG    | bot.client | response status=400 body={"code":-4016,"msg":"Limit price can't be higher than 1749.65."}
+2026-06-08 09:49:45,293 | ERROR    | bot.cli | order rejected: [-4016] Limit price can't be higher than 1749.65.
+2026-06-08 09:49:54,243 | INFO     | bot.orders | sending LIMIT BUY ETHUSDT qty=0.100000 price=1700.00 tif=GTC
+2026-06-08 09:49:54,245 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'ETHUSDT', 'side': 'BUY', 'type': 'LIMIT', 'quantity': 0.1, 'price': 1700.0, 'timeInForce': 'GTC', 'timestamp': 1780912194245, 'recvWindow': 5000}
+2026-06-08 09:49:54,333 | DEBUG    | bot.client | response status=200 body={"orderId":9327374896,"symbol":"ETHUSDT","status":"NEW","clientOrderId":"FV2VromgwNaxvsszpiPhXx","price":"1700.00","origQty":"0.100","executedQty":"0.000","cumQty":"0.000","timeInForce":"GTC","type":"LIMIT","reduceOnly":false,"closePosition":false,"side":"BUY","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"LIMIT","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"updateTime":1780912194300}
+2026-06-08 09:49:54,334 | INFO     | bot.orders | order 9327374896 status=NEW executedQty=0.000 avgPrice=n/a
+2026-06-08 09:50:02,721 | INFO     | bot.orders | sending MARKET BUY XYZUSDT qty=0.010000
+2026-06-08 09:50:02,723 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'XYZUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.01, 'timestamp': 1780912202723, 'recvWindow': 5000}
+2026-06-08 09:50:02,855 | DEBUG    | bot.client | response status=400 body={"code":-1121,"msg":"Invalid symbol."}
+2026-06-08 09:50:02,855 | ERROR    | bot.cli | order rejected: [-1121] Invalid symbol.
