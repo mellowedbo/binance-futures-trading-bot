@@ -37,19 +37,19 @@ We load the `.env` file at CLI startup via `python-dotenv`. The keys are never a
 Place a market buy:
 
 ```bash
-python cli.py place-order --symbol BTCUSDT --side BUY --type MARKET --quantity 0.001
+python cli.py --symbol BTCUSDT --side BUY --type MARKET --quantity 0.001
 ```
 
 Place a limit sell:
 
 ```bash
-python cli.py place-order --symbol ETHUSDT --side SELL --type LIMIT --quantity 0.1 --price 3200
+python cli.py --symbol ETHUSDT --side SELL --type LIMIT --quantity 0.1 --price 3200
 ```
 
 Place a stop-market sell:
 
 ```bash
-python cli.py place-order --symbol BTCUSDT --side SELL --type STOP_MARKET --quantity 0.001 --stop-price 50000
+python cli.py --symbol BTCUSDT --side SELL --type STOP_MARKET --quantity 0.001 --stop-price 50000
 ```
 
 On success you will see two Rich panels — one summarizing the request, one showing the exchange response with order ID, status, executed quantity, and average fill price:
@@ -109,6 +109,7 @@ The API secret is never written to any log line. We redact the `signature` param
 - There is no retry logic on transient network failures. A single timeout or connection reset raises `NetworkError` immediately. Retrying with backoff is a deliberate non-goal for this scope.
 - The bot only places orders — it does not query balances, open positions, or cancel existing orders. Those are out of scope.
 - `recvWindow` is hardcoded at 5000 ms. If the testnet experiences high latency, signed requests may expire before reaching the server.
+- STOP_MARKET and other conditional order types (STOP, TAKE_PROFIT_MARKET) are not supported on the Binance Futures Testnet's `/fapi/v1/order` endpoint as of 2026. The testnet returns error `-4120` directing you to use the Algo Order API, which is not available on the testnet. On the production Binance Futures exchange, these order types work through the standard endpoint. The CLI, validators, and tests all support STOP_MARKET — it will function correctly against production or once the testnet re-enables it.
 
 ## Order types supported
 
