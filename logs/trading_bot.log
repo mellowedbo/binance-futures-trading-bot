@@ -1,0 +1,6 @@
+2026-06-08 08:10:24,067 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.001000
+2026-06-08 08:10:24,069 | INFO     | bot.orders | order 1001 status=FILLED executedQty=0.001 avgPrice=67234.50
+2026-06-08 08:10:24,070 | INFO     | bot.orders | sending LIMIT SELL ETHUSDT qty=0.100000 price=3200.00 tif=GTC
+2026-06-08 08:10:24,071 | INFO     | bot.orders | order 1001 status=FILLED executedQty=0.001 avgPrice=67234.50
+2026-06-08 08:10:24,071 | INFO     | bot.orders | sending STOP_MARKET SELL BTCUSDT qty=0.001000 stopPrice=58000.00
+2026-06-08 08:10:24,072 | INFO     | bot.orders | order 1001 status=FILLED executedQty=0.001 avgPrice=67234.50
