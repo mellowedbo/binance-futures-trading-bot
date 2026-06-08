@@ -32,3 +32,79 @@
 2026-06-08 09:50:02,723 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'XYZUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.01, 'timestamp': 1780912202723, 'recvWindow': 5000}
 2026-06-08 09:50:02,855 | DEBUG    | bot.client | response status=400 body={"code":-1121,"msg":"Invalid symbol."}
 2026-06-08 09:50:02,855 | ERROR    | bot.cli | order rejected: [-1121] Invalid symbol.
+2026-06-08 10:11:27,872 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:11:27,874 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:11:27,875 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:11:27,875 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:11:27,878 | INFO     | bot.ui | web order request: LIMIT SELL ETHUSDT qty=0.1
+2026-06-08 10:11:27,879 | INFO     | bot.orders | sending LIMIT SELL ETHUSDT qty=0.100000 price=3200.00 tif=GTC
+2026-06-08 10:11:27,880 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:11:27,880 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:11:27,883 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:11:27,884 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:11:27,885 | ERROR    | bot.ui | web order rejected: [-1121] Invalid symbol.
+2026-06-08 10:11:27,888 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:11:27,889 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:11:27,889 | ERROR    | bot.ui | web order network failure: refused
+2026-06-08 10:11:47,467 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:11:47,503 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:11:47,504 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:11:47,504 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:11:47,508 | INFO     | bot.ui | web order request: LIMIT SELL ETHUSDT qty=0.1
+2026-06-08 10:11:47,508 | INFO     | bot.orders | sending LIMIT SELL ETHUSDT qty=0.100000 price=3200.00 tif=GTC
+2026-06-08 10:11:47,509 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:11:47,510 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:11:47,513 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:11:47,513 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:11:47,514 | ERROR    | bot.ui | web order rejected: [-1121] Invalid symbol.
+2026-06-08 10:11:47,517 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:11:47,518 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:11:47,518 | ERROR    | bot.ui | web order network failure: refused
+2026-06-08 10:15:16,367 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:15:16,405 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:15:16,406 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:15:16,407 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:15:16,410 | INFO     | bot.ui | web order request: LIMIT SELL ETHUSDT qty=0.1
+2026-06-08 10:15:16,411 | INFO     | bot.orders | sending LIMIT SELL ETHUSDT qty=0.100000 price=3200.00 tif=GTC
+2026-06-08 10:15:16,412 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:15:16,413 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:15:16,416 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:15:16,417 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:15:16,418 | ERROR    | bot.ui | web order rejected: [-1121] Invalid symbol.
+2026-06-08 10:15:16,421 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:15:16,422 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:15:16,422 | ERROR    | bot.ui | web order network failure: refused
+2026-06-08 10:17:01,027 | DEBUG    | bot.client | GET https://testnet.binancefuture.com/fapi/v2/balance params={'timestamp': 1780913821026, 'recvWindow': 5000}
+2026-06-08 10:17:01,232 | DEBUG    | bot.client | response status=200 body=[{"accountAlias":"AuSgXqTiAuoCAu","asset":"FDUSD","balance":"0.00000000","crossWalletBalance":"0.00000000","crossUnPnl":"0.00000000","availableBalance":"0.00000000","maxWithdrawAmount":"0.00000000","marginAvailable":true,"updateTime":0},{"accountAlias":"AuSgXqTiAuoCAu","asset":"U","balance":"0.00000000","crossWalletBalance":"0.00000000","crossUnPnl":"0.00000000","availableBalance":"0.00000000","maxWithdrawAmount":"0.00000000","marginAvailable":true,"updateTime":0},{"accountAlias":"AuSgXqTiAuoCAu
+2026-06-08 10:17:01,233 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.001000
+2026-06-08 10:17:01,235 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1780913821235, 'recvWindow': 5000}
+2026-06-08 10:17:01,334 | DEBUG    | bot.client | response status=200 body={"orderId":14491802870,"symbol":"BTCUSDT","status":"NEW","clientOrderId":"mg7fAD6fJIKCvlX3CMJtmw","price":"0.00","origQty":"0.0010","executedQty":"0.0000","cumQty":"0.0000","timeInForce":"GTC","type":"MARKET","reduceOnly":false,"closePosition":false,"side":"BUY","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"MARKET","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"updateTime":1780913821300}
+2026-06-08 10:17:01,334 | INFO     | bot.orders | order 14491802870 status=NEW executedQty=0.0000 avgPrice=n/a
+2026-06-08 10:17:01,336 | INFO     | bot.orders | sending LIMIT SELL ETHUSDT qty=0.010000 price=5000.00 tif=GTC
+2026-06-08 10:17:01,336 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'ETHUSDT', 'side': 'SELL', 'type': 'LIMIT', 'quantity': 0.01, 'price': 5000.0, 'timeInForce': 'GTC', 'timestamp': 1780913821336, 'recvWindow': 5000}
+2026-06-08 10:17:01,430 | DEBUG    | bot.client | response status=200 body={"orderId":9328140905,"symbol":"ETHUSDT","status":"NEW","clientOrderId":"KgAzVcaE40N1K8haVMWJYe","price":"5000.00","origQty":"0.010","executedQty":"0.000","cumQty":"0.000","timeInForce":"GTC","type":"LIMIT","reduceOnly":false,"closePosition":false,"side":"SELL","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"LIMIT","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"updateTime":1780913821394}
+2026-06-08 10:17:01,431 | INFO     | bot.orders | order 9328140905 status=NEW executedQty=0.000 avgPrice=n/a
+2026-06-08 10:17:01,432 | INFO     | bot.orders | sending STOP_MARKET SELL BTCUSDT qty=0.001000 stopPrice=50000.00
+2026-06-08 10:17:01,433 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'BTCUSDT', 'side': 'SELL', 'type': 'STOP_MARKET', 'quantity': 0.001, 'stopPrice': 50000.0, 'timestamp': 1780913821433, 'recvWindow': 5000}
+2026-06-08 10:17:01,520 | DEBUG    | bot.client | response status=400 body={"code":-4120,"msg":"Order type not supported for this endpoint. Please use the Algo Order API endpoints instead."}
+2026-06-08 10:17:01,521 | INFO     | bot.orders | sending MARKET BUY INVALIDPAIR qty=0.001000
+2026-06-08 10:17:01,522 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'INVALIDPAIR', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1780913821522, 'recvWindow': 5000}
+2026-06-08 10:17:01,620 | DEBUG    | bot.client | response status=400 body={"code":-1121,"msg":"Invalid symbol."}
+2026-06-08 10:17:07,275 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.001000
+2026-06-08 10:17:07,277 | DEBUG    | bot.client | POST https://testnet.binancefuture.com/fapi/v1/order params={'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1780913827277, 'recvWindow': 5000}
+2026-06-08 10:17:07,487 | DEBUG    | bot.client | response status=200 body={"orderId":14491805386,"symbol":"BTCUSDT","status":"NEW","clientOrderId":"ljKxH37Hr9KwAYfdfZo5Du","price":"0.00","origQty":"0.0010","executedQty":"0.0000","cumQty":"0.0000","timeInForce":"GTC","type":"MARKET","reduceOnly":false,"closePosition":false,"side":"BUY","positionSide":"BOTH","stopPrice":"0.00","workingType":"CONTRACT_PRICE","priceProtect":false,"origType":"MARKET","priceMatch":"NONE","selfTradePreventionMode":"EXPIRE_MAKER","goodTillDate":0,"updateTime":1780913827444}
+2026-06-08 10:17:07,488 | INFO     | bot.orders | order 14491805386 status=NEW executedQty=0.0000 avgPrice=n/a
+2026-06-08 10:17:33,674 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:17:33,715 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:17:33,716 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:17:33,717 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:17:33,720 | INFO     | bot.ui | web order request: LIMIT SELL ETHUSDT qty=0.1
+2026-06-08 10:17:33,721 | INFO     | bot.orders | sending LIMIT SELL ETHUSDT qty=0.100000 price=3200.00 tif=GTC
+2026-06-08 10:17:33,721 | INFO     | bot.orders | order 9999 status=NEW executedQty=0.01 avgPrice=0
+2026-06-08 10:17:33,722 | INFO     | bot.ui | web order placed: orderId=9999 status=NEW
+2026-06-08 10:17:33,725 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:17:33,726 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:17:33,727 | ERROR    | bot.ui | web order rejected: [-1121] Invalid symbol.
+2026-06-08 10:17:33,730 | INFO     | bot.ui | web order request: MARKET BUY BTCUSDT qty=0.01
+2026-06-08 10:17:33,731 | INFO     | bot.orders | sending MARKET BUY BTCUSDT qty=0.010000
+2026-06-08 10:17:33,731 | ERROR    | bot.ui | web order network failure: refused

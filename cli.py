@@ -161,7 +161,9 @@ def place_order(
 ) -> None:
     setup_logging()
     try:
-        sym, sd, ot, qty, pr, sp = _validate_inputs(symbol, side, type, quantity, price, stop_price)
+        sym, sd, ot, qty, pr, sp = _validate_inputs(
+            symbol, side, type, quantity, price, stop_price
+        )
     except ValidationError as exc:
         _handle_validation_error(exc)
         return
