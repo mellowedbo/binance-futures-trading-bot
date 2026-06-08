@@ -1,0 +1,9 @@
+[project]
+name = "trading-bot"
+version = "1.0.0"
+description = "Binance Futures USDT-M Testnet trading bot with MARKET, LIMIT, and STOP_MARKET order support"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+tb_format = "short"

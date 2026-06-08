@@ -1,0 +1,16 @@
+certifi==2025.4.26
+charset-normalizer==3.4.2
+click==8.2.1
+idna==3.10
+markdown-it-py==3.0.0
+mdurl==0.1.2
+Pygments==2.19.1
+pytest==8.4.0
+pytest-mock==3.14.1
+python-dotenv==1.1.0
+requests==2.32.4
+responses==0.25.7
+rich==14.0.0
+shellingham==1.5.4
+typer==0.16.0
+urllib3==2.4.0
