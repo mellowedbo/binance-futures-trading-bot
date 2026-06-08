@@ -1,3 +1,4 @@
+import logging
 import os
 
 import typer
@@ -22,11 +23,12 @@ load_dotenv()
 
 app = typer.Typer(add_completion=False)
 console = Console()
+logger = logging.getLogger("bot.cli")
 
 
 def _require_env(key: str) -> str:
     value = os.getenv(key)
-    if not value or value == f"your_{key.lower()}_here":
+    if not value or value.startswith("your_"):
         console.print(
             Panel(
                 f"[red]{key} is not set.[/red]\n"
@@ -83,6 +85,7 @@ def _handle_validation_error(exc: ValidationError) -> None:
 
 
 def _handle_api_error(exc: BinanceAPIError) -> None:
+    logger.error("order rejected: [%s] %s", exc.code, exc.msg)
     console.print(
         Panel(
             f"[red]Binance rejected the order: [{exc.code}] {exc.msg}[/red]",
@@ -94,6 +97,7 @@ def _handle_api_error(exc: BinanceAPIError) -> None:
 
 
 def _handle_network_error(exc: NetworkError) -> None:
+    logger.error("network failure: %s", exc)
     console.print(
         Panel(
             "[red]Could not reach Binance. Check your internet connection and "

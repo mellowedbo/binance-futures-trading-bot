@@ -110,7 +110,7 @@ class TestValidateStopPrice:
         with pytest.raises(ValidationError, match="required for STOP_MARKET"):
             validate_stop_price(None, "STOP_MARKET")
 
-    def test_none_for_market_is_ok(self):
+    def test_stop_price_none_for_non_conditional_is_ok(self):
         assert validate_stop_price(None, "MARKET") is None
 
     def test_negative_stop_price_raises(self):

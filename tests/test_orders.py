@@ -22,10 +22,7 @@ class TestPlaceMarketOrder:
         mgr = OrderManager(client)
         result = mgr.place_market_order("BTCUSDT", "BUY", 0.01)
         mock_post.assert_called_once()
-        call_args = mock_post.call_args
-        params = call_args[0][1] if len(call_args[0]) > 1 else call_args[1].get("params")
-        if params is None:
-            _, params = call_args[0]
+        _, params = mock_post.call_args[0]
         assert params["type"] == "MARKET"
         assert params["symbol"] == "BTCUSDT"
         assert params["side"] == "BUY"
