@@ -4,7 +4,14 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request
 
-from bot.client import BinanceAPIError, BinanceClient, NetworkError
+from bot.client import (
+    BadResponseError,
+    BinanceAPIError,
+    BinanceClient,
+    NetworkError,
+    RateLimitError,
+    ValidationError,
+)
 from bot.logging_config import setup_logging
 from bot.orders import OrderManager
 from bot.validators import (
@@ -65,13 +72,12 @@ def create_app(api_key: str | None = None, api_secret: str | None = None) -> Fla
             quantity = validate_quantity(data.get("quantity", 0))
             price = validate_price(data.get("price"), order_type)
             stop_price = validate_stop_price(data.get("stop_price"), order_type)
-        except Exception as exc:
+        except ValidationError as exc:
             return {"error": str(exc)}, 400
 
         logger.info(
             "web order request: %s %s %s qty=%s", order_type, side, symbol, quantity
         )
-
         client = BinanceClient(resolved_key, resolved_secret)
         manager = OrderManager(client)
 
@@ -81,13 +87,18 @@ def create_app(api_key: str | None = None, api_secret: str | None = None) -> Fla
             elif order_type == "LIMIT":
                 resp = manager.place_limit_order(symbol, side, quantity, price)
             else:
+                # stop-losses from the UI default to closing-only so they can
+                # never open a new position by mistake
                 resp = manager.place_stop_market_order(
-                    symbol, side, quantity, stop_price
+                    symbol, side, quantity, stop_price, reduce_only=True
                 )
         except BinanceAPIError as exc:
             logger.error("web order rejected: [%s] %s", exc.code, exc.msg)
             return {"error": f"[{exc.code}] {exc.msg}"}, 502
-        except NetworkError as exc:
+        except RateLimitError as exc:
+            logger.error("web order rate limited: %s", exc)
+            return {"error": str(exc)}, 429
+        except (NetworkError, BadResponseError) as exc:
             logger.error("web order network failure: %s", exc)
             return {"error": "Could not reach Binance testnet. Check connectivity."}, 503
 

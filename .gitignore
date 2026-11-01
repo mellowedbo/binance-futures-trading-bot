@@ -1,9 +1,22 @@
+# Secrets
 .env
-logs/*.1
-logs/*.2
-logs/*.3
+
+# Runtime artifacts
+logs/
+*.log
+
+# Python
 __pycache__/
 *.pyc
 .pytest_cache/
+.ruff_cache/
 venv/
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Editors / OS
 .DS_Store
+.idea/
+.vscode/

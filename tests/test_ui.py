@@ -1,9 +1,9 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from bot.client import BinanceAPIError, NetworkError
 from ui.app import create_app
-
 
 FAKE_KEY = "test_key_ui"
 FAKE_SECRET = "test_secret_ui"

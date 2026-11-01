@@ -26,9 +26,32 @@ class TestPlaceMarketOrder:
         assert params["type"] == "MARKET"
         assert params["symbol"] == "BTCUSDT"
         assert params["side"] == "BUY"
-        assert params["quantity"] == 0.01
+        assert params["quantity"] == "0.01"  # plain decimal string, never 1e-05
         assert "price" not in params
         assert result["orderId"] == 4242
+
+    def test_quantity_never_scientific_notation(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_market_order("BTCUSDT", "SELL", 0.00001)
+        _, params = mock_post.call_args[0]
+        assert params["quantity"] == "0.00001"
+        assert "e" not in params["quantity"].lower()
+
+    def test_client_order_id_generated(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_market_order("BTCUSDT", "BUY", 0.01)
+        _, params = mock_post.call_args[0]
+        assert params["newClientOrderId"]
+        assert len(params["newClientOrderId"]) <= 32
+
+    def test_explicit_client_order_id_respected(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_market_order("BTCUSDT", "BUY", 0.01, client_order_id="my-order-1")
+        _, params = mock_post.call_args[0]
+        assert params["newClientOrderId"] == "my-order-1"
 
 
 class TestPlaceLimitOrder:
@@ -42,8 +65,8 @@ class TestPlaceLimitOrder:
         assert params["type"] == "LIMIT"
         assert params["symbol"] == "ETHUSDT"
         assert params["side"] == "SELL"
-        assert params["quantity"] == 0.1
-        assert params["price"] == 3200.0
+        assert params["quantity"] == "0.1"
+        assert params["price"] == "3200"
         assert params["timeInForce"] == "GTC"
         assert result["orderId"] == 4242
 
@@ -65,10 +88,24 @@ class TestPlaceStopMarketOrder:
         assert params["type"] == "STOP_MARKET"
         assert params["symbol"] == "BTCUSDT"
         assert params["side"] == "SELL"
-        assert params["quantity"] == 0.01
-        assert params["stopPrice"] == 58000.0
+        assert params["quantity"] == "0.01"
+        assert params["stopPrice"] == "58000"
         assert "price" not in params
         assert result["orderId"] == 4242
+
+    def test_reduce_only_true_sends_flag(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_stop_market_order("BTCUSDT", "SELL", 0.01, 58000.0, reduce_only=True)
+        _, params = mock_post.call_args[0]
+        assert params["reduceOnly"] == "true"
+
+    def test_reduce_only_false_omits_flag(self):
+        client, mock_post = _make_client_with_mock()
+        mgr = OrderManager(client)
+        mgr.place_stop_market_order("BTCUSDT", "SELL", 0.01, 58000.0, reduce_only=False)
+        _, params = mock_post.call_args[0]
+        assert "reduceOnly" not in params
 
 
 class TestReturnValues:

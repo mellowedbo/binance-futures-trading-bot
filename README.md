@@ -93,7 +93,7 @@ Open http://127.0.0.1:5000 in a browser. The same `.env` credentials used by the
 
 The UI lets you select a symbol, toggle BUY/SELL, choose an order type, fill in the relevant fields, and submit. Price and stop-price inputs appear and disappear based on the selected order type. Successful orders appear immediately in a recent orders table below the form.
 
-The web server does not need to be restarted when `.env` changes — credentials are read at each request.
+Credentials are resolved once at startup (from arguments or `.env`), so restart the server after changing `.env`.
 
 ## Project layout
 
@@ -105,9 +105,9 @@ The web server does not need to be restarted when `.env` changes — credentials
 | `ui/templates/index.html` | Single-page browser interface |
 | `bot/client.py` | Binance REST wrapper with HMAC signing |
 | `bot/orders.py` | OrderManager — maps intent to API params |
-| `bot/validators.py` | Pure input validation, no I/O |
+| `bot/validators.py` | Pure input validation (finite-number + format helpers), no I/O |
 | `bot/logging_config.py` | Rotating file + Rich console handler |
-| `tests/` | 62-test pytest suite, no live API calls |
+| `tests/` | 88-test pytest suite, no live API calls |
 
 ## Running tests
 
@@ -115,7 +115,7 @@ The web server does not need to be restarted when `.env` changes — credentials
 pytest tests/ -v
 ```
 
-The suite covers validators (28 tests), the Binance REST client (13 tests), order placement logic (9 tests), and the web UI layer (12 tests) — 62 tests total. All Binance HTTP calls are mocked; no live credentials are needed to run the tests.
+The suite covers validators (44 tests), the Binance REST client (17 tests), order placement logic (15 tests), and the web UI layer (12 tests) — 88 tests total. All Binance HTTP calls are mocked; no live credentials are needed to run the tests.
 
 To run a single file:
 

@@ -7,7 +7,14 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from bot.client import BinanceAPIError, BinanceClient, NetworkError, ValidationError
+from bot.client import (
+    BadResponseError,
+    BinanceAPIError,
+    BinanceClient,
+    NetworkError,
+    RateLimitError,
+    ValidationError,
+)
 from bot.logging_config import setup_logging
 from bot.orders import OrderManager
 from bot.validators import (
@@ -125,27 +132,47 @@ def _validate_inputs(
 def _dispatch_order(
     manager: OrderManager, order_type: str, symbol: str, side: str,
     quantity: float, price: float | None, stop_price: float | None,
+    reduce_only: bool,
 ) -> dict:
     if order_type == "MARKET":
         return manager.place_market_order(symbol, side, quantity)
     if order_type == "LIMIT":
         return manager.place_limit_order(symbol, side, quantity, price)
-    return manager.place_stop_market_order(symbol, side, quantity, stop_price)
+    return manager.place_stop_market_order(
+        symbol, side, quantity, stop_price, reduce_only=reduce_only
+    )
 
 
 def _execute_order(
     manager: OrderManager, order_type: str, symbol: str, side: str,
     quantity: float, price: float | None, stop_price: float | None,
+    reduce_only: bool = False,
 ) -> dict | None:
     try:
         return _dispatch_order(
-            manager, order_type, symbol, side, quantity, price, stop_price
+            manager, order_type, symbol, side, quantity, price, stop_price,
+            reduce_only,
         )
     except BinanceAPIError as exc:
         _handle_api_error(exc)
-    except NetworkError as exc:
+    except RateLimitError as exc:
+        _handle_rate_limit_error(exc)
+    except (NetworkError, BadResponseError) as exc:
         _handle_network_error(exc)
     return None
+
+
+def _handle_rate_limit_error(exc: RateLimitError) -> None:
+    logger.error("rate limited: %s", exc)
+    console.print(
+        Panel(
+            f"[red]{exc}[/red]\nBinance is throttling this IP. Wait and retry — "
+            "the order was NOT placed.",
+            title="Rate Limited",
+            border_style="yellow",
+        )
+    )
+    raise typer.Exit(code=1)
 
 
 @app.command()
@@ -157,6 +184,11 @@ def place_order(
     price: str | None = typer.Option(None, help="Limit price (required for LIMIT)"),
     stop_price: str | None = typer.Option(
         None, help="Stop price (required for STOP_MARKET)"
+    ),
+    reduce_only: bool = typer.Option(
+        True, "--reduce-only/--allow-open",
+        help="STOP_MARKET only: restrict the order to closing an existing "
+        "position (recommended for stop-losses).",
     ),
 ) -> None:
     setup_logging()
@@ -173,7 +205,7 @@ def place_order(
     _render_request_panel(sym, sd, ot, qty, pr, sp)
 
     manager = OrderManager(BinanceClient(api_key, api_secret))
-    resp = _execute_order(manager, ot, sym, sd, qty, pr, sp)
+    resp = _execute_order(manager, ot, sym, sd, qty, pr, sp, reduce_only)
     if resp is not None:
         _render_response_panel(resp)
 

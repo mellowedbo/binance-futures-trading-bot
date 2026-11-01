@@ -161,3 +161,62 @@ class TestBinanceAPIError:
     def test_str_representation(self):
         err = BinanceAPIError(-1121, "bad")
         assert str(err) == "[-1121] bad"
+
+
+class TestHardenedResponses:
+    """Regression tests: non-JSON bodies and HTTP-level errors."""
+
+    @responses.activate
+    def test_non_json_response_raises_bad_response(self):
+        from bot.client import BadResponseError
+
+        responses.add(
+            responses.POST,
+            "https://testnet.binancefuture.com/fapi/v1/order",
+            body="<html>502 Bad Gateway</html>",
+            status=502,
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        with pytest.raises(BadResponseError):
+            client.post("/fapi/v1/order", {"symbol": "BTCUSDT"})
+
+    @responses.activate
+    def test_rate_limit_429_raises_rate_limit_error(self):
+        from bot.client import RateLimitError
+
+        responses.add(
+            responses.POST,
+            "https://testnet.binancefuture.com/fapi/v1/order",
+            json={"code": -1003, "msg": "Too much request weight used."},
+            status=429,
+            headers={"retry-after": "7"},
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        with pytest.raises(RateLimitError) as exc_info:
+            client.post("/fapi/v1/order", {"symbol": "BTCUSDT"})
+        assert exc_info.value.status_code == 429
+        assert exc_info.value.retry_after == 7
+
+    @responses.activate
+    def test_http_500_with_error_body_raises_api_error(self):
+        responses.add(
+            responses.GET,
+            "https://testnet.binancefuture.com/fapi/v1/account",
+            json={"code": -1000, "msg": "Internal error"},
+            status=500,
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        with pytest.raises(BinanceAPIError):
+            client.get("/fapi/v1/account")
+
+    @responses.activate
+    def test_success_body_with_code_200_is_not_an_error(self):
+        # DELETE /order returns {"code": 200, "msg": "The operation is successful."}
+        responses.add(
+            responses.POST,
+            "https://testnet.binancefuture.com/fapi/v1/order",
+            json={"code": 200, "msg": "success"},
+            status=200,
+        )
+        client = BinanceClient(TEST_KEY, TEST_SECRET)
+        assert client.post("/fapi/v1/order", {"symbol": "BTCUSDT"}) == {"code": 200, "msg": "success"}

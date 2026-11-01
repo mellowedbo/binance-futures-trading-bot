@@ -119,3 +119,50 @@ class TestValidateStopPrice:
 
     def test_valid_stop_price(self):
         assert validate_stop_price("58000", "STOP_MARKET") == 58000.0
+
+
+class TestNonFiniteInputs:
+    """NaN and infinity used to slip past validation (nan <= 0 is False)."""
+
+    @pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf"), "nan", "inf", "1e400"])
+    def test_quantity_rejects_non_finite(self, bad):
+        with pytest.raises(ValidationError, match="finite|positive"):
+            validate_quantity(bad)
+
+    @pytest.mark.parametrize("bad", [float("nan"), float("inf"), "nan"])
+    def test_price_rejects_non_finite(self, bad):
+        with pytest.raises(ValidationError, match="finite|positive"):
+            validate_price(bad, "LIMIT")
+
+    @pytest.mark.parametrize("bad", [float("nan"), float("inf"), "inf"])
+    def test_stop_price_rejects_non_finite(self, bad):
+        with pytest.raises(ValidationError, match="finite|positive"):
+            validate_stop_price(bad, "STOP_MARKET")
+
+
+class TestFormatNumber:
+
+    def test_plain_decimals(self):
+        from bot.validators import format_number
+        assert format_number(0.01) == "0.01"
+        assert format_number(0.00001) == "0.00001"
+        assert format_number(10.0) == "10"
+        assert format_number(3200.0) == "3200"
+        assert format_number(0.1) == "0.1"
+
+    def test_never_scientific_notation(self):
+        from bot.validators import format_number
+        for value in (1e-5, 1e-7, 5e-8, 1234.5678):
+            assert "e" not in format_number(value).lower()
+
+    def test_non_finite_raises(self):
+        from bot.validators import format_number
+        with pytest.raises(ValidationError):
+            format_number(float("nan"))
+        with pytest.raises(ValidationError):
+            format_number(float("inf"))
+
+    def test_string_input_rejected(self):
+        from bot.validators import format_number
+        with pytest.raises(TypeError):
+            format_number("0.01")
